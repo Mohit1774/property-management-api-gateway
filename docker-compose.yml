@@ -1,0 +1,49 @@
+version: '3.7'
+services:
+  api-gateway:
+    build: .
+    container_name: api-gateway
+    ports:
+      - "5001:5001"
+    depends_on:
+      - property-management-service
+      - user-management-service
+      - agent-management-service
+    environment:
+      - GATEWAY_PORT=5001
+
+  property-management-service:
+    image: mohitkumar1828/property-service:v1
+    container_name: property-management-service
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/propertydb
+    depends_on:
+      - mongo
+
+  user-management-service:
+    image: mohitkumar1828/user-service:v1
+    container_name: user-management-service
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/userdb
+    depends_on:
+      - mongo
+
+  agent-management-service:
+    image: mohitkumar1828/agent-service:v1
+    container_name: agent-management-service
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_URI=mongodb://mongo:27017/userdb
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
